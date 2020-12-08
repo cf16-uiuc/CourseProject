@@ -1,34 +1,23 @@
 # Text Classification Competition: Twitter Sarcasm Detection 
 
-Dataset format:
+This project is for CS410 during the fall 2020 semester at UIUC. More details about this competition can be found at:
+https://github.com/CS410Fall2020/ClassificationCompetition
 
-Each line contains a JSON object with the following fields : 
-- ***response*** :  the Tweet to be classified
-- ***context*** : the conversation context of the ***response***
-	- Note, the context is an ordered list of dialogue, i.e., if the context contains three elements, `c1`, `c2`, `c3`, in that order, then `c2` is a reply to `c1` and `c3` is a reply to `c2`. Further, the Tweet to be classified is a reply to `c3`.
-- ***label*** : `SARCASM` or `NOT_SARCASM` 
+# Implementation Overview
 
-- ***id***:  String identifier for sample. This id will be required when making submissions. (ONLY in test data)
+This classifier relies on the Simple Transformer package, based on the Transformer package from HuggingFace. The documentation for Simple Transformer can be foundh here: https://simpletransformers.ai/docs/classification-models/#classificationmodel
 
-For instance, for the following training example : 
+The code is broken into two files - train.py and test.py. In train.py the focus of the file is training the model. Prior to training the model we do a little bit of preprocessing of the data. First, we remove all stop words, then we replace all emoticons with text that may be able to provide information to the model that is trained. For the training we rely on the Simple Transformer package. From that package we use the binary classifier. Their setup allows us to bring in any pretrained model and adjust to our data. We looked at multiple pretrained models from HuggingFace found here: https://huggingface.co/models. In the end we discovered that simply using the BERT model yielded the best results. 
 
-`"label": "SARCASM", "response": "@USER @USER @USER I don't get this .. obviously you do care or you would've moved right along .. instead you decided to care and troll her ..", "context": ["A minor child deserves privacy and should be kept out of politics . Pamela Karlan , you should be ashamed of your very angry and obviously biased public pandering , and using a child to do it .", "@USER If your child isn't named Barron ... #BeBest Melania couldn't care less . Fact . 💯"]`
+To apply labels to a new set of tweets we can run the test.py file. This does a similar process of converting emoticons to text and removing stop words to preprocess the data. We then read in our trained model from train.py and can use the predict() function to predict the new labels. 
 
-The response tweet, "@USER @USER @USER I don't get this..." is a reply to its immediate context "@USER If your child isn't..." which is a reply to "A minor child deserves privacy...". Your goal is to predict the label of the "response" while optionally using the context (i.e, the immediate or the full context).
+# Running the Code
 
-***Dataset size statistics*** :
+To run the code you need to ensure that all the required packages are installed. The code can be run from the command line by running either python train.py or python test.py, depending on which file you want to run. The different variables, such as file name for training data, number of epochs, or learning rate can be adjusted within the file at the beginning of the file. The end result of running train.py will be folder titled outputs. The test.py file reads from the outputs folder and will output and an answers.txt file. 
 
-| Train | Test |
-|-------|------|
-| 5000  | 1800 |
+# Useful Links
 
-For Test, we've provided you the ***response*** and the ***context***. We also provide the ***id*** (i.e., identifier) to report the results.
-
-***Submission Instructions*** : Please add a comma separated file named `answer.txt` containing the predictions on the test dataset. The file should have no headers and have exactly 1800 rows. Each row must have the sample id and the predicted label. For example:
-
-twitter_1,SARCASM  
-twitter_2,NOT_SARCASM  
-...
-
-
-
+https://huggingface.co/models
+https://simpletransformers.ai/docs/binary-classification/
+https://towardsdatascience.com/simple-transformers-introducing-the-easiest-bert-roberta-xlnet-and-xlm-library-58bf8c59b2a3
+https://github.com/ThilinaRajapakse/simpletransformers
