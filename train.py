@@ -1,3 +1,5 @@
+# importing necessary packages
+
 from simpletransformers.classification import ClassificationModel, ClassificationArgs
 import pandas as pd
 import json
@@ -16,11 +18,11 @@ BATCH_SIZE = 100
 LEARNING_RATE = 0.00004
 MODEL_TYPE = 'bert'
 MODEL_BASE = 'bert-base-cased'
+OUTPUT = 'outputs/'
 
 word_dist = []
 train = []
 test = []
-pred = []
 
 # Converts emojis into text
 def convert_emojis(text):
@@ -32,7 +34,8 @@ def convert_emojis(text):
 # Train BERT model
 def bert_training(model_type, model_base, train_data, early_stop,
                   early_stop_delta, overwrite, epoch, batch_size,
-                  learning_rate):
+                  learning_rate, output):
+
     # Bringing in the training data
     with open(train_data, 'r') as json_file:
         json_list = list(json_file)
@@ -40,24 +43,18 @@ def bert_training(model_type, model_base, train_data, early_stop,
     for json_str in json_list:
         train.append(json.loads(json_str))
 
+    # Data cleaning
     train_labels = [train[i]['label'] for i in range(len(train))]
 
     train_response = [remove_stopwords(convert_emojis(train[i]['response'])) for i in range(len(train))]
 
+    # Split data into training and test sets
     labels_train, labels_test, response_train, response_test = train_test_split(train_labels,
                                                                                 train_response,
                                                                                 test_size=0.2,
                                                                                 random_state=42)
 
-    # Bringing in the testing data
-    with open('./data/test.jsonl', 'r') as json_file:
-        json_list = list(json_file)
-
-    for json_str in json_list:
-        pred.append(json.loads(json_str))
-
-    pred_response = [convert_emojis(pred[i]['response']) for i in range(len(pred))]
-
+    # Convert SARCASM/NO SARCASM labels into 1s and 0s
     labels_train_pd = (pd.DataFrame(labels_train) == 'SARCASM').astype(int)
     labels_test_pd = (pd.DataFrame(labels_test) == 'SARCASM').astype(int)
     response_train_pd = pd.DataFrame(response_train)
@@ -80,6 +77,7 @@ def bert_training(model_type, model_base, train_data, early_stop,
     model_args.num_train_epochs = epoch
     model_args.train_batch_size = batch_size
     model_args.learning_rate = learning_rate
+    model_args.output_dir = output
 
     # Create a TransformerModel
     model = ClassificationModel(model_type, model_base, use_cuda=False,
@@ -89,8 +87,8 @@ def bert_training(model_type, model_base, train_data, early_stop,
     model.train_model(train_bert)
 
     # Evaluate the model
-    result, model_outputs, wrong_predictions = model.eval_model(eval_bert)
+    model.eval_model(eval_bert)
 
 
 bert_training(MODEL_TYPE, MODEL_BASE, DATA_INPUT, EARLY_STOP,
-              EARLY_STOP_DELTA, OVERWRITE, EPOCHS, BATCH_SIZE, LEARNING_RATE)
+              EARLY_STOP_DELTA, OVERWRITE, EPOCHS, BATCH_SIZE, LEARNING_RATE, OUTPUT)
