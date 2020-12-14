@@ -5,7 +5,7 @@ https://github.com/CS410Fall2020/ClassificationCompetition
 
 # Implementation Overview
 
-This classifier relies on the Simple Transformer package, based on the Transformer package from HuggingFace. The documentation for Simple Transformer can be foundh here: https://simpletransformers.ai/docs/classification-models/#classificationmodel
+This classifier relies on the Simple Transformer package, based on the Transformer package from HuggingFace. The documentation for Simple Transformer can be found here: https://simpletransformers.ai/docs/classification-models/#classificationmodel. All packages needed can be installed with the package manager pip.
 
 The code is broken into two files - train.py and test.py. In train.py the focus of the file is training the model. Prior to training the model we do a little bit of preprocessing of the data. First, we remove all stop words, then we replace all emoticons with text that may be able to provide information to the model that is trained. For the training we rely on the Simple Transformer package. From that package we use the binary classifier. Their setup allows us to bring in any pretrained model and adjust to our data. We looked at multiple pretrained models from HuggingFace found here: https://huggingface.co/models. In the end we discovered that simply using the BERT model yielded the best results. 
 
@@ -13,7 +13,9 @@ To apply labels to a new set of tweets we can run the test.py file. This does a 
 
 # Running the Code
 
-To run the code you need to ensure that all the required packages are installed. The code can be run from the command line by running either python train.py or python test.py, depending on which file you want to run. The different variables, such as file name for training data, number of epochs, or learning rate can be adjusted within the file at the beginning of the file. The end result of running train.py will be folder titled outputs. The test.py file reads from the outputs folder and will output and an answers.txt file. 
+To run the code you need to ensure that all the required packages are installed. The code can be run from the command line by running either python train.py or python test.py, depending on which file needs to be run. The code can also be run from python IDEs. The different variables, such as file name for training data, number of epochs, or learning rate can be adjusted within the file at the beginning of the file. The end result of running train.py will be created in a folder titled outputs. The test.py file reads from the outputs folder and will output and an answers.txt file. 
+
+For a detailed overview of running the code, an instructional demo can be found here: https://youtu.be/hzyMMAHryAE
 
 # Useful Links
 
